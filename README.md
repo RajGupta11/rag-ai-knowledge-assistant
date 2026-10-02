@@ -1,59 +1,52 @@
 # RAG AI Knowledge Assistant
 
-A simple Retrieval-Augmented Generation (RAG) prototype built with Python.
+A working Retrieval-Augmented Generation (RAG) assistant in Python. It loads your documents, splits them into chunks, retrieves the most relevant passages for a question, and generates a **grounded answer with source citations**. If the answer is not in your documents, it says so instead of guessing.
 
-## What problem does it solve?
+## Features
+- **Loads** `.txt`, `.md` and `.pdf` files from `data/` (recursively)
+- **Chunking** with overlap, so retrieval returns passages, not whole files
+- **TF-IDF retrieval** (unigrams + bigrams) with a relevance threshold
+- **LLM generation** via the Anthropic API when `ANTHROPIC_API_KEY` is set
+- **Offline fallback**: with no key, it returns the most relevant sentences, with citations
+- **"I don't know"** when nothing relevant is retrieved
+- CLI (`app.py`), web UI (`streamlit_app.py`) and unit tests
 
-The project demonstrates how an AI assistant can retrieve relevant information from a
-small knowledge base before producing an answer. This is useful when an application
-needs to work with domain-specific or private information.
+## Pipeline
+```
+documents -> loader -> chunker -> TF-IDF index
+question  -> retriever (top-k, threshold) -> generator (LLM or extractive) -> answer + sources
+```
 
-## How it works
-
-1. Text documents are loaded from `data/`.
-2. TF-IDF converts the documents and user query into vectors.
-3. Cosine similarity retrieves the most relevant documents.
-4. The retrieved context is shown as the grounding context for an AI response.
-
-This project focuses on the retrieval and grounding part of a RAG pipeline. An LLM can
-be connected to the retrieved context as the generation layer.
-
-## Tech Stack
-
-- Python
-- Scikit-learn
-- TF-IDF
-- Cosine Similarity
-- Retrieval-Augmented Generation (RAG) concepts
-- Large Language Models (LLMs) as the optional generation layer
-
-## Run locally
-
+## Setup
 ```bash
 python -m venv .venv
-# Windows:
-.venv\Scripts\activate
-# macOS/Linux:
-source .venv/bin/activate
-
+source .venv/bin/activate        # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
-python app.py
+cp .env.example .env             # then put your ANTHROPIC_API_KEY in .env (optional)
 ```
 
-Type a question such as:
-
-`What is RAG?`
-
-Type `exit` to quit.
-
-## Project Structure
-
-```text
-rag-ai-knowledge-assistant/
-├── app.py
-├── requirements.txt
-├── README.md
-└── data/
-    ├── ai_notes.txt
-    └── software_notes.txt
+## Run
+```bash
+python app.py                    # command line
+streamlit run streamlit_app.py   # web UI
+pytest                           # tests
 ```
+Add your own files to `data/` and restart.
+
+## Project structure
+```
+app.py              CLI entry point
+streamlit_app.py    Web UI
+rag/
+  loader.py         read txt/md/pdf
+  chunker.py        overlapping word chunks
+  retriever.py      TF-IDF search + score threshold
+  generator.py      Anthropic LLM answer / extractive fallback
+data/               knowledge base
+tests/test_rag.py   unit tests
+```
+
+## Roadmap
+- Swap TF-IDF for embeddings (sentence-transformers + FAISS/Chroma) or hybrid search
+- Conversation memory and streaming answers
+- Evaluation set to measure retrieval quality
