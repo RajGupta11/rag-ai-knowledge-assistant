@@ -1,0 +1,8 @@
+Software Engineering Notes
+
+Good software development includes clear requirements, modular design, testing,
+debugging, version control, and continuous improvement.
+
+REST APIs allow applications to communicate over HTTP using common operations such as
+GET, POST, PUT, and DELETE. Git is commonly used to track source-code changes and
+support collaboration through branches and pull requests.
