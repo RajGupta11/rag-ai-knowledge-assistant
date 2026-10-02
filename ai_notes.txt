@@ -1,0 +1,8 @@
+Generative AI and RAG
+
+Retrieval-Augmented Generation (RAG) combines information retrieval with a language model.
+A typical RAG pipeline has four stages: ingest documents, retrieve relevant information,
+provide the retrieved context to an LLM, and generate a grounded response.
+
+RAG can help applications answer questions using private or domain-specific information
+that may not have been present in the original training data of a language model.
